@@ -1,5 +1,5 @@
-{
-  "short_name": "የአትክልት ክምችት",
+  {
+  "short_name": "የአትክልት",
   "name": "የአትክልት ክምችት መቆጣጠሪያ",
   "icons": [
     {
@@ -9,7 +9,8 @@
       "purpose": "any maskable"
     }
   ],
-  "start_url": "index.html",
+  "start_url": "/Vegetables-inventory/index.html",
+  "scope": "/Vegetables-inventory/",
   "background_color": "#2e7d32",
   "theme_color": "#2e7d32",
   "display": "standalone",
