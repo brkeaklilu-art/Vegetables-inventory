@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>የአትክልት ክምችት መቆጣጠሪያ</title>
+    <style>
+        :root {
+            --primary-color: #2e7d32;
+            --bg-color: #f5f5f5;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --kilo-color: #e3f2fd;
+            --price-color: #e8f5e9;
+            --danger-color: #d32f2f;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding-bottom: 30px;
+        }
+
+        /* Header Style */
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        /* Big Add Button */
+        .add-btn {
+            background-color: #ff9800;
+            color: white;
+            width: 100%;
+            padding: 25px;
+            font-size: 40px;
+            font-weight: bold;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 25px;
+            transition: transform 0.1s;
+        }
+        .add-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Screen/Wizard Steps */
+        .screen {
+            display: none;
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            animation: fadeIn 0.2s ease-in-out;
+        }
+        .screen.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header Container for Back Arrows */
+        .screen-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .screen-title {
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        /* Small Back Arrow Styling */
+        .back-arrow-btn {
+            position: absolute;
+            left: 0;
+            background: #eee;
+            border: none;
+            font-size: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            font-weight: bold;
+        }
+        .back-arrow-btn:active {
+            background: #ccc;
+        }
+
+        /* Grid Layout for Vegetables */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        .grid-item {
+            background: #f9f9f9;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        .grid-item:active, .grid-item.selected {
+            border-color: var(--primary-color);
+            background-color: #e8f5e9;
+        }
+        .veg-icon {
+            font-size: 50px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        /* Input Screens (Kilo & Price) */
+        .kilo-bg { background-color: var(--kilo-color) !important; }
+        .price-bg { background-color: var(--price-color) !important; }
+        
+        .huge-display {
+            width: 100%;
+            font-size: 45px;
+            text-align: center;
+            padding: 15px;
+            border: 3px solid #ccc;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            background: white;
+            font-weight: bold;
+        }
+        .unit-label {
+            font-size: 30px;
+            font-weight: bold;
+            color: #555;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        /* Supplier List Layout */
+        .supplier-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .supplier-item {
+            background: #f9f9f9;
+            border: 3px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+        }
+        .supplier-item:active {
+            background: #eee;
+            border-color: #333;
+        }
+
+        /* Confirmation Page */
+        .summary-card {
+            background: #f9f9f9;
+            border: 2px solid #ddd;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .summary-row {
+            font-size: 24px;
+            margin: 12px 0;
+            font-weight: bold;
+        }
+
+        /* Action Buttons */
+        .btn-row {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .btn-confirm {
+            flex: 1;
+            background-color: #4caf50;
+            color: white;
+            font-size: 35px;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        .btn-cancel {
+            flex: 1;
+            background-color: var(--danger-color);
+            color: white;
+            font-size: 35px;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        /* Home Page Dashboard Cards */
+        .history-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin: 15px 0 10px 0;
+            color: #555;
+        }
+        .log-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .log-card {
+            background: var(--card-bg);
+            border-left: 8px solid var(--primary-color);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+        .log-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .log-details {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .log-veg-name {
+            font-size: 22px;
+            font-weight: bold;
+        }
+        .log-sub-text {
+            font-size: 16px;
+            color: #666;
+            font-weight: bold;
+        }
+        .log-price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2e7d32;
+            margin-right: 10px;
+        }
+        .log-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .action-icon-btn {
+            border: none;
+            background: none;
+            padding: 8px;
+            cursor: pointer;
+            font-size: 22px;
+        }
+
+        /* Delete Modal Backdrop */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <header>የአትክልት ክምችት መቆጣጠሪያ (Inventory)</header>
+
+    <div class="container">
+        
+        <div id="homeScreen">
+            <button class="add-btn" onclick="startWizard()">+ ጨምር (ADD)</button>
+            <div class="history-title">የተመዘገቡ ዝርዝሮች (Saved Records)</div>
+            <div id="logList" class="log-list"></div>
+        </div>
+
+        <div id="stepVegetable" class="screen">
+            <div class="screen-header">
+                <button class="back-arrow-btn" onclick="goHome()">◀</button>
+                <div class="screen-title">አትክልት ይምረጡ</div>
+            </div>
+            <div class="grid-container" id="vegGrid"></div>
+            <div class="btn-row">
+                <button class="btn-cancel" onclick="goHome()">✖</button>
+            </div>
+        </div>
+
+        <div id="stepKilos" class="screen kilo-bg">
+            <div class="screen-header">
+                <button class="back-arrow-btn" onclick="prevStep('stepVegetable')">◀</button>
+                <div class="screen-title">ኪሎ መጠን ያስገቡ</div>
+            </div>
+            <div class="unit-label">KG</div>
+            <input type="number" id="kiloInput" class="huge-display" placeholder="0" inputmode="decimal">
+            <div class="btn-row">
+                <button class="btn-cancel" onclick="prevStep('stepVegetable')">◀</button>
+                <button class="btn-confirm" onclick="saveKilos()">▶</button>
+            </div>
+        </div>
+
+        <div id="stepPrice" class="screen price-bg">
+            <div class="screen-header">
+                <button class="back-arrow-btn" onclick="prevStep('stepKilos')">◀</button>
+                <div class="screen-title">ዋጋ ያስገቡ</div>
+            </div>
+            <div class="unit-label">ብር (Birr)</div>
+            <input type="number" id="priceInput" class="huge-display" placeholder="0" inputmode="numeric">
+            <div class="btn-row">
+                <button class="btn-cancel" onclick="prevStep('stepKilos')">◀</button>
+                <button class="btn-confirm" onclick="savePrice()">▶</button>
+            </div>
+        </div>
+
+        <div id="stepSupplier" class="screen">
+            <div class="screen-header">
+                <button class="back-arrow-btn" onclick="prevStep('stepPrice')">◀</button>
+                <div class="screen-title">አቅራቢ ይምረጡ (Supplier)</div>
+            </div>
+            <div class="supplier-list" id="supplierListContainer"></div>
+            <div class="btn-row">
+                <button class="btn-cancel" onclick="prevStep('stepPrice')">◀</button>
+            </div>
+        </div>
+
+        <div id="stepConfirm" class="screen">
+            <div class="screen-header">
+                <button class="back-arrow-btn" onclick="prevStep('stepSupplier')">◀</button>
+                <div class="screen-title">ማረጋገጫ (Confirm)</div>
+            </div>
+            <div class="summary-card">
+                <div id="confirmIcon" style="font-size: 70px; margin-bottom: 10px;"></div>
+                <div class="summary-row" id="confirmVeg"></div>
+                <div class="summary-row" id="confirmKilo"></div>
+                <div class="summary-row" id="confirmPrice"></div>
+                <div class="summary-row" id="confirmSupplier" style="color:#ff9800;"></div>
+            </div>
+            <div class="btn-row">
+                <button class="btn-cancel" onclick="goHome()">✖</button>
+                <button class="btn-confirm" onclick="finalSaveTransaction()">✔</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div style="font-size: 50px; color: var(--danger-color);">⚠️</div>
+            <h2 style="margin: 15px 0; font-size: 24px;">ይሄ ፋይል ይጥፋ?</h2>
+            <p style="font-size: 18px; color: #666; margin-bottom: 20px;">ይህንን መረጃ መመለስ አይቻልም።</p>
+            <div class="btn-row">
+                <button class="btn-cancel" style="font-size: 24px; padding: 10px;" onclick="closeDeleteModal()">አይ</button>
+                <button class="btn-confirm" style="font-size: 24px; padding: 10px; background-color: var(--danger-color);" onclick="executeDelete()">አዎ ✔</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- ADMIN OPTIONS (Fixed Vegetables & Suppliers) ---
+        const VEGETABLES = [
+            { id: 'v1', name: 'ቃሪያ', icon: '🌶️' },
+            { id: 'v2', name: 'ፎሶሊያ', icon: '🌱' },
+            { id: 'v3', name: 'ካሮት', icon: '🥕' },
+            { id: 'v4', name: 'ባሮ', icon: '🧅' },
+            { id: 'v5', name: 'ሚጥማጣ', icon: '🔥' },
+            { id: 'v6', name: 'ብሮኮሊ', icon: '🥦' },
+            { id: 'v7', name: 'ስኳች', icon: '🎃' },
+            { id: 'v8', name: 'አበባ ጎመን', icon: '🥬' },
+            { id: 'v9', name: 'ዝኩኒ', icon: '🥒' },
+            { id: 'v10', name: 'ኩከንበር', icon: '🥗' },
+            { id: 'v11', name: 'ደበርጃ', icon: '🍆' },
+            { id: 'v12', name: 'ቀይስር', icon: '🍠' }
+        ];
+
+        const SUPPLIERS = [
+            'ክብሩ', 'ጫላ', 'አብድመጅድ', 'ምስክር', 'መስፍን ይመር', 
+            'አስራር', 'ግርማ', 'እንዳለ', 'ጌጤ', 'ዳዊት ከበደ', 'ያም', 'ፀጋዬ', 'ወንዴ'
+        ];
+
+        // --- APP STATE ---
+        let currentTransaction = {
+            id: null,
+            vegId: '',
+            vegName: '',
+            vegIcon: '',
+            kilos: '',
+            price: '',
+            supplier: ''
+        };
+        
+        let allLogs = [];
+        let deleteTargetId = null;
+        let isEditing = false;
+
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            renderVegetablesGrid();
+            renderSuppliersList();
+            loadLogsFromStorage();
+        };
+
+        function renderVegetablesGrid() {
+            const grid = document.getElementById('vegGrid');
+            grid.innerHTML = '';
+            VEGETABLES.forEach(veg => {
+                const item = document.createElement('div');
+                item.className = 'grid-item';
+                item.onclick = () => selectVegetable(veg);
+                item.innerHTML = `<span class="veg-icon">${veg.icon}</span> ${veg.name}`;
+                grid.appendChild(item);
+            });
+        }
+
+        function renderSuppliersList() {
+            const container = document.getElementById('supplierListContainer');
+            container.innerHTML = '';
+            SUPPLIERS.forEach(name => {
+                const item = document.createElement('div');
+                item.className = 'supplier-item';
+                item.innerText = name;
+                item.onclick = () => selectSupplier(name);
+                container.appendChild(item);
+            });
+        }
+
+        function loadLogsFromStorage() {
+            const stored = localStorage.getItem('eyasu_inventory_logs');
+            if (stored) {
+                allLogs = JSON.parse(stored);
+            }
+            renderHomeLogs();
+        }
+
+        function saveLogsToStorage() {
+            localStorage.setItem('eyasu_inventory_logs', JSON.stringify(allLogs));
+            renderHomeLogs();
+        }
+
+        function renderHomeLogs() {
+            const listContainer = document.getElementById('logList');
+            listContainer.innerHTML = '';
+            
+            if (allLogs.length === 0) {
+                listContainer.innerHTML = '<div style="text-align:center; padding:30px; color:#999; font-size:18px; font-weight:bold;">ምንም መረጃ የለም (No Records)</div>';
+                return;
+            }
+
+            allLogs.forEach(log => {
+                const card = document.createElement('div');
+                card.className = 'log-card';
+                card.innerHTML = `
+                    <div class="log-info">
+                        <span style="font-size:40px;">${log.vegIcon}</span>
+                        <div class="log-details">
+                            <span class="log-veg-name">${log.vegName}</span>
+                            <span class="log-sub-text">${log.kilos} KG | አቅራቢ: ${log.supplier}</span>
+                        </div>
+                    </div>
+                    <div style="display:flex; align-items:center;">
+                        <span class="log-price">${log.price} ብር</span>
+                        <div class="log-actions">
+                            <button class="action-icon-btn" onclick="editLog('${log.id}')">✏️</button>
+                            <button class="action-icon-btn" onclick="confirmDeleteLog('${log.id}')">🗑️</button>
+                        </div>
+                    </div>
+                `;
+                listContainer.appendChild(card);
+            });
+        }
+
+        // --- NAVIGATION WIZARD FLOW ---
+        function switchScreen(screenId) {
+            document.getElementById('homeScreen').style.display = 'none';
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function goHome() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('homeScreen').style.display = 'block';
+            resetTransaction();
+        }
+
+        function startWizard() {
+            isEditing = false;
+            resetTransaction();
+            switchScreen('stepVegetable');
+        }
+
+        function prevStep(screenId) {
+            switchScreen(screenId);
+        }
+
+        function resetTransaction() {
+            currentTransaction = { id: null, vegId: '', vegName: '', vegIcon: '', kilos: '', price: '', supplier: '' };
+            document.getElementById('kiloInput').value = '';
+            document.getElementById('priceInput').value = '';
+        }
+
+        // --- STEP LOGIC ---
+        function selectVegetable(veg) {
+            currentTransaction.vegId = veg.id;
+            currentTransaction.vegName = veg.name;
+            currentTransaction.vegIcon = veg.icon;
+            switchScreen('stepKilos');
+            setTimeout(() => document.getElementById('kiloInput').focus(), 300);
+        }
+
+        function saveKilos() {
+            const val = document.getElementById('kiloInput').value;
+            if (!val || val <= 0) {
+                alert('እባክዎ ትክክለኛ የኪሎ መጠን ያስገቡ!');
+                return;
+            }
+            currentTransaction.kilos = val;
+            switchScreen('stepPrice');
+            setTimeout(() => document.getElementById('priceInput').focus(), 300);
+        }
+
+        function savePrice() {
+            const val = document.getElementById('priceInput').value;
+            if (!val || val <= 0) {
+                alert('እባክዎ ትክክለኛ ዋጋ ያስገቡ!');
+                return;
+            }
+            currentTransaction.price = val;
+            switchScreen('stepSupplier');
+        }
+
+        function selectSupplier(name) {
+            currentTransaction.supplier = name;
+            showConfirmationPage();
+        }
+
+        function showConfirmationPage() {
+            document.getElementById('confirmIcon').innerText = currentTransaction.vegIcon;
+            document.getElementById('confirmVeg').innerText = currentTransaction.vegName;
+            document.getElementById('confirmKilo').innerText = currentTransaction.kilos + " KG";
+            document.getElementById('confirmPrice').innerText = currentTransaction.price + " ብር (Birr)";
+            document.getElementById('confirmSupplier').innerText = "አቅራቢ: " + currentTransaction.supplier;
+            switchScreen('stepConfirm');
+        }
+
+        function finalSaveTransaction() {
+            if (isEditing) {
+                const index = allLogs.findIndex(l => l.id === currentTransaction.id);
+                if (index !== -1) {
+                    allLogs[index] = { ...currentTransaction };
+                }
+            } else {
+                currentTransaction.id = 'log_' + Date.now();
+                allLogs.unshift({ ...currentTransaction });
+            }
+            
+            saveLogsToStorage();
+            goHome();
+        }
+
+        // --- EDIT & DELETE CONTROL ---
+        function editLog(id) {
+            const logToEdit = allLogs.find(l => l.id === id);
+            if (!logToEdit) return;
+
+            isEditing = true;
+            currentTransaction = { ...logToEdit };
+
+            document.getElementById('kiloInput').value = currentTransaction.kilos;
+            document.getElementById('priceInput').value = currentTransaction.price;
+
+            switchScreen('stepVegetable');
+        }
+
+        function confirmDeleteLog(id) {
+            deleteTargetId = id;
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+            deleteTargetId = null;
+        }
+
+        function executeDelete() {
+            if (deleteTargetId) {
+                allLogs = allLogs.filter(l => l.id !== deleteTargetId);
+                saveLogsToStorage();
+            }
+            closeDeleteModal();
+        }
+    </script>
+</body>
+</html>
