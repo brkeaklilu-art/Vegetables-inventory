@@ -1,15 +1,16 @@
 {
-  "short_name": "Inventory",
+  "short_name": "የአትክልት ክምችት",
   "name": "የአትክልት ክምችት መቆጣጠሪያ",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2329/2329864.png",
+      "src": "icon.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ],
-  "start_url": "./veggies1.html",
-  "background_color": "#f5f5f5",
+  "start_url": "index.html",
+  "background_color": "#2e7d32",
   "theme_color": "#2e7d32",
   "display": "standalone",
   "orientation": "portrait"
